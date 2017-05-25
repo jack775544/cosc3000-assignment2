@@ -26,23 +26,23 @@ var actions = {
     
     keyDown: function (event) {
         switch (event.keyCode) {
-            case 39:
+            case 37:
                 // Right
                 earth.rotateY(Math.PI / (360 + 5));
                 console.log("Right");
                 break;
-            case 40:
+            case 38:
                 // Down
                 earth.rotateX(Math.PI / (360 + 5));
                 console.log("Down");
                 break;
-            case 37:
+            case 39:
                 // Left
                 earth.rotateY(-Math.PI / (360 - 5));
                 camera.lookAt(earth.position);
                 console.log("Left");
                 break;
-            case 38:
+            case 40:
                 // Up
                 earth.rotateX(-Math.PI / (360 + 5));
                 console.log("Up");
