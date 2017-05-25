@@ -71,6 +71,7 @@ function main() {
 
     // Schedule the first frame.
     requestAnimationFrame(update);
-
+    earth.rotateY((Math.PI) /(360) + 90);
+    earth.rotateY((Math.PI) /(360) + 5);
     document.addEventListener("keydown", actions.keyDown);
 }
