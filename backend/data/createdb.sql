@@ -1,0 +1,7 @@
+CREATE DATABASE accidents;
+
+CREATE USER cosc;
+ALTER USER cosc WITH PASSWORD 'password';
+
+CREATE EXTENSION postgis;
+CREATE EXTENSION postgis_topology;
