@@ -23,50 +23,94 @@ var actions = {
             object.position.z -= 1
         }
     },
+
+    rotateCameraX: function(angle){
+        var coords = util.cartesianToPolar(application.camera.position);
+        coords.polar += angle;
+        var newCoords = util.polarToCartesian(coords);
+        application.camera.position.x = newCoords.x;
+        application.camera.position.y = newCoords.y;
+        application.camera.position.z = newCoords.z;
+        application.camera.lookAt(application.earth.position);
+
+        application.light.position.x = application.camera.position.x;
+        application.light.position.y = application.camera.position.y;
+        application.light.position.z = application.camera.position.z;
+        application.light.lookAt(application.earth.position);
+    },
+
+    rotateCameraY: function(angle){
+        var coords = util.cartesianToPolar(application.camera.position);
+        coords.elavation += angle;
+        var newCoords = util.polarToCartesian(coords);
+        application.camera.position.x = newCoords.x;
+        application.camera.position.y = newCoords.y;
+        application.camera.position.z = newCoords.z;
+        application.camera.lookAt(application.earth.position);
+
+        application.light.position.x = application.camera.position.x;
+        application.light.position.y = application.camera.position.y;
+        application.light.position.z = application.camera.position.z;
+        application.light.lookAt(application.earth.position);
+    },
+
+    zoomCamera: function(distance){
+        var coords = util.cartesianToPolar(application.camera.position);
+        coords.r += distance;
+        var newCoords = util.polarToCartesian(coords);
+        application.camera.position.x = newCoords.x;
+        application.camera.position.y = newCoords.y;
+        application.camera.position.z = newCoords.z;
+        application.camera.lookAt(application.earth.position);
+
+        application.light.position.x = application.camera.position.x;
+        application.light.position.y = application.camera.position.y;
+        application.light.position.z = application.camera.position.z;
+        application.light.lookAt(application.earth.position);
+    },
     
     keyDown: function (event) {
         switch (event.keyCode) {
             case 40:
             case 83:
                 // Up
-                earth.rotateX(-Math.PI / (360 + 5));
+                actions.rotateCameraY(10/360);
                 break;
             case 38:
             case 87:
                 // Down
-                earth.rotateX(Math.PI / (360 + 5));
+                actions.rotateCameraY(-10/360);
                 break;
             case 37:
             case 65:
                 // Right
-                // And code for the switch here
-                earth.rotateY(Math.PI / (360 + 5));
+                actions.rotateCameraX(10/360);
+
                 break;
             case 39:
             case 68:
                 // Left
-                earth.rotateY(-Math.PI / (360 + 5));
-                camera.lookAt(earth.position);
+                actions.rotateCameraX(-10/360);
                 break;
             case 81:
                 // q
-                earth.rotateZ(Math.PI / (360 + 5));
+                action.zoomCamera(-10);
                 break;
             case 69:
                 // e
-                earth.rotateZ(-Math.PI / (360 + 5));
+                action.zoomCamera(10);
                 break;
             case 82:
                 // r
-                if (earth.position.z < -300) {
-                    earth.position.z += 5;
-                }
+                /*if (application.earth.position.z < -300) {
+                    application.earth.position.z += 5;
+                }*/
                 break;
             case 84:
                 // t
-                if (earth.position.z > -550) {
-                    earth.position.z += -5;
-                }
+                /*if (application.earth.position.z > -550) {
+                    application.earth.position.z += -5;
+                }*/
                 break;
         }
     }

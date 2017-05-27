@@ -24,7 +24,7 @@ var construct = {
             ),
             sphere_args.material
         );
-        objects.push(mesh);
+        application.objects.push(mesh);
         return mesh;
     }
 };

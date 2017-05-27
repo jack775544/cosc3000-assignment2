@@ -1,77 +1,80 @@
+var application = {
 // We only ever have one renderer and camera, so leave them as global singletons
-var renderer;
-var camera;
-
+    renderer: null,
+    camera: null,
 // Store an array of all meshes we have made as well
-var objects = [];
-
+    objects: [],
+    light: null,
 // Also have an earth object. This will be the centre of the scene
-var earth;
+    earth: null,
 
-$("document").ready(main);
+    main: function () {
+        // Set the scene size.
+        var dimensions = document.body.getBoundingClientRect();
+        const WIDTH = dimensions.width;
+        const HEIGHT = dimensions.height;
 
-function main() {
-    // Set the scene size.
-    var dimensions = document.body.getBoundingClientRect();
-    const WIDTH = dimensions.width;
-    const HEIGHT = dimensions.height;
+        // Set some camera attributes.
+        const VIEW_ANGLE = 45;
+        const ASPECT = WIDTH / HEIGHT;
+        const NEAR = 0.1;
+        const FAR = 10000;
 
-    // Set some camera attributes.
-    const VIEW_ANGLE = 45;
-    const ASPECT = WIDTH / HEIGHT;
-    const NEAR = 0.1;
-    const FAR = 10000;
+        const container = document.querySelector('#container');
 
-    const container = document.querySelector('#container');
+        application.renderer = new THREE.WebGLRenderer();
+        application.camera = new THREE.PerspectiveCamera(
+            VIEW_ANGLE,
+            ASPECT,
+            NEAR,
+            FAR
+        );
+        console.log(application.camera);
+        application.camera.position.z = 300;
+        const scene = new THREE.Scene();
 
-    renderer = new THREE.WebGLRenderer();
-    camera = new THREE.PerspectiveCamera(
-        VIEW_ANGLE,
-        ASPECT,
-        NEAR,
-        FAR
-    );
-    console.log(camera);
+        scene.add(application.camera);
+        application.renderer.setSize(WIDTH, HEIGHT);
+        container.appendChild(application.renderer.domElement);
 
-    const scene = new THREE.Scene();
+        // ------------------------------------------------------
+        var material = new THREE.MeshPhongMaterial({
+            map: THREE.ImageUtils.loadTexture('texture/earth.jpg', THREE.SphericalRefractionMapping)
+        });
+        application.earth = construct.sphere({radius: 200, material: material});
+        //application.earth.position.z = -300;
+        scene.add(application.earth);
 
-    scene.add(camera);
-    renderer.setSize(WIDTH, HEIGHT);
-    container.appendChild(renderer.domElement);
+        // create a point light
+        application.light = new THREE.PointLight(0xFFFFFF);
 
-    // ------------------------------------------------------
-    var material = new THREE.MeshPhongMaterial({
-        map: THREE.ImageUtils.loadTexture('texture/earth.jpg', THREE.SphericalRefractionMapping)
-    });
-    const sphere = construct.sphere({radius: 200, material: material});
-    earth = sphere;
-    earth.position.z = -300;
-    scene.add(earth);
+        // set its position
+        /*pointLight.position.x = 10;
+        pointLight.position.y = 50;
+        pointLight.position.z = 130;*/
+        application.light.position.x = application.camera.position.x;
+        application.light.position.y = application.camera.position.y;
+        application.light.position.z = application.camera.position.z;
 
-    // create a point light
-    const pointLight = new THREE.PointLight(0xFFFFFF);
+        // add to the scene
+        scene.add(application.light);
 
-    // set its position
-    pointLight.position.x = 10;
-    pointLight.position.y = 50;
-    pointLight.position.z = 130;
+        application.camera.lookAt(application.earth.position);
+        function update() {
+            // Draw!
+            // randomMove(sphere);
+            application.renderer.render(scene, application.camera);
 
-    // add to the scene
-    scene.add(pointLight);
+            // Schedule the next frame.
+            requestAnimationFrame(update);
+        }
 
-    camera.lookAt(earth.position);
-    function update() {
-        // Draw!
-        // randomMove(sphere);
-        renderer.render(scene, camera);
-
-        // Schedule the next frame.
+        // Schedule the first frame.
         requestAnimationFrame(update);
+        // earth.rotateY((Math.PI) /(360) + 90);
+        // earth.rotateY((Math.PI) /(360) + 5);
+        document.addEventListener("keydown", actions.keyDown);
     }
+};
 
-    // Schedule the first frame.
-    requestAnimationFrame(update);
-    earth.rotateY((Math.PI) /(360) + 90);
-    earth.rotateY((Math.PI) /(360) + 5);
-    document.addEventListener("keydown", actions.keyDown);
-}
+$(document).ready(application.main);
