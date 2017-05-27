@@ -40,9 +40,13 @@ var actions = {
     },
 
     rotateCameraY: function(angle){
+        console.log(application.camera.position);
         var coords = util.cartesianToPolar(application.camera.position);
-        coords.elavation += angle;
+        console.log(coords);
+        coords.elevation += angle;
+        console.log(coords);
         var newCoords = util.polarToCartesian(coords);
+        console.log(newCoords);
         application.camera.position.x = newCoords.x;
         application.camera.position.y = newCoords.y;
         application.camera.position.z = newCoords.z;
@@ -73,13 +77,19 @@ var actions = {
         switch (event.keyCode) {
             case 40:
             case 83:
-                // Up
-                actions.rotateCameraY(10/360);
+                // Down
+                console.log('down');
+                if (util.cartesianToPolar(application.camera.position).elevation > -1.4) {
+                    actions.rotateCameraY(-10 / 360);
+                }
                 break;
             case 38:
             case 87:
-                // Down
-                actions.rotateCameraY(-10/360);
+                // Up
+                console.log('up');
+                if (util.cartesianToPolar(application.camera.position).elevation < 1.4) {
+                    actions.rotateCameraY(10 / 360);
+                }
                 break;
             case 37:
             case 65:
@@ -93,12 +103,16 @@ var actions = {
                 actions.rotateCameraX(-10/360);
                 break;
             case 81:
-                // q
-                action.zoomCamera(-10);
+                // q - zoom in
+                if (util.cartesianToPolar(application.camera.position).r > 230) {
+                    actions.zoomCamera(-10);
+                }
                 break;
             case 69:
-                // e
-                action.zoomCamera(10);
+                // e - zoom out
+                if (util.cartesianToPolar(application.camera.position).r < 700) {
+                    actions.zoomCamera(10);
+                }
                 break;
             case 82:
                 // r
