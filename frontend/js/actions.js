@@ -1,3 +1,7 @@
+/**
+ * This namespace deals with actions in the scene.
+ * If a function does something (eg. move a thing) then it belongs here
+ */
 var actions = {
     /**
      * Moves an object in a random direction
@@ -24,13 +28,13 @@ var actions = {
         }
     },
 
-    rotateCameraX: function(angle){
-        var coords = util.cartesianToPolar(application.camera.position);
-        coords.polar += angle;
-        var newCoords = util.polarToCartesian(coords);
-        application.camera.position.x = newCoords.x;
-        application.camera.position.y = newCoords.y;
-        application.camera.position.z = newCoords.z;
+    /**
+     * Moves the camera to the position of the new coords and looks at the earth again
+     */
+    moveCamera: function(coords) {
+        application.camera.position.x = coords.x;
+        application.camera.position.y = coords.y;
+        application.camera.position.z = coords.z;
         application.camera.lookAt(application.earth.position);
 
         application.light.position.x = application.camera.position.x;
@@ -39,38 +43,26 @@ var actions = {
         application.light.lookAt(application.earth.position);
     },
 
+    rotateCameraX: function(angle){
+        var coords = util.cartesianToPolar(application.camera.position);
+        coords.polar += angle;
+        var newCoords = util.polarToCartesian(coords);
+        actions.moveCamera(newCoords);
+    },
+
     rotateCameraY: function(angle){
         console.log(application.camera.position);
         var coords = util.cartesianToPolar(application.camera.position);
-        console.log(coords);
         coords.elevation += angle;
-        console.log(coords);
         var newCoords = util.polarToCartesian(coords);
-        console.log(newCoords);
-        application.camera.position.x = newCoords.x;
-        application.camera.position.y = newCoords.y;
-        application.camera.position.z = newCoords.z;
-        application.camera.lookAt(application.earth.position);
-
-        application.light.position.x = application.camera.position.x;
-        application.light.position.y = application.camera.position.y;
-        application.light.position.z = application.camera.position.z;
-        application.light.lookAt(application.earth.position);
+        actions.moveCamera(newCoords);
     },
 
     zoomCamera: function(distance){
         var coords = util.cartesianToPolar(application.camera.position);
         coords.r += distance;
         var newCoords = util.polarToCartesian(coords);
-        application.camera.position.x = newCoords.x;
-        application.camera.position.y = newCoords.y;
-        application.camera.position.z = newCoords.z;
-        application.camera.lookAt(application.earth.position);
-
-        application.light.position.x = application.camera.position.x;
-        application.light.position.y = application.camera.position.y;
-        application.light.position.z = application.camera.position.z;
-        application.light.lookAt(application.earth.position);
+        actions.moveCamera(newCoords);
     },
     
     keyDown: function (event) {

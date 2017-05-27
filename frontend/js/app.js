@@ -1,11 +1,15 @@
+/**
+ * Application namespace.
+ * The main function and any application state are saved here.
+ */
 var application = {
-// We only ever have one renderer and camera, so leave them as global singletons
+    // We only ever have one renderer and camera, so leave them as global singletons
     renderer: null,
     camera: null,
-// Store an array of all meshes we have made as well
+    // Store an array of all meshes we have made as well
     objects: [],
     light: null,
-// Also have an earth object. This will be the centre of the scene
+    // Also have an earth object. This will be the centre of the scene
     earth: null,
 
     main: function () {
@@ -49,9 +53,6 @@ var application = {
         application.light = new THREE.PointLight(0xFFFFFF);
 
         // set its position
-        /*pointLight.position.x = 10;
-        pointLight.position.y = 50;
-        pointLight.position.z = 130;*/
         application.light.position.x = application.camera.position.x;
         application.light.position.y = application.camera.position.y;
         application.light.position.z = application.camera.position.z;

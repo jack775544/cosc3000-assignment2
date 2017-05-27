@@ -1,3 +1,8 @@
+/**
+ * This namespace is for utility functions.
+ * Any general convenience methods go here.
+ * These methods should be pure, they take an input and return an output
+ */
 var util = {
     /**
      * Converts a position object of the form {x, y, z} to a polar object

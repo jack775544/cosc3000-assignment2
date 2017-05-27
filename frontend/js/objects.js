@@ -1,5 +1,6 @@
-/*
+/**
  * Methods dealing with constructing meshes
+ * If something needs to be made in a general way, this is the spot
  */
 var construct = {
 
