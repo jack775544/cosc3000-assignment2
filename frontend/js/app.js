@@ -42,38 +42,51 @@ var application = {
         container.appendChild(application.renderer.domElement);
 
         // ------------------------------------------------------
+        var texture = THREE.ImageUtils.loadTexture('texture/earth.jpg', THREE.SphericalRefractionMapping);
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.offset.x = 0.25;
+        console.log(texture);
         var material = new THREE.MeshPhongMaterial({
-            map: THREE.ImageUtils.loadTexture('texture/earth.jpg', THREE.SphericalRefractionMapping)
+            map: texture
         });
+        material.shininess = 0;
+        console.log(material);
         application.earth = construct.sphere({radius: 200, material: material});
         //application.earth.position.z = -300;
         scene.add(application.earth);
 
-        // create a point light
+        // create a point light - this one will follow the camera
         application.light = new THREE.PointLight(0xFFFFFF);
-
-        // set its position
+        application.light.intensity = 0.9;
         application.light.position.x = application.camera.position.x;
         application.light.position.y = application.camera.position.y;
         application.light.position.z = application.camera.position.z;
 
+        var lights = [];
+        lights.push(new THREE.PointLight(0xFFFFFF));
+        lights.push(new THREE.PointLight(0xFFFFFF));
+        lights.push(new THREE.PointLight(0xFFFFFF));
+        lights.push(new THREE.PointLight(0xFFFFFF));
+        lights.push(new THREE.PointLight(0xFFFFFF));
+        lights.push(new THREE.PointLight(0xFFFFFF));
+        lights[0].position.x = 500;
+        lights[1].position.x = -500;
+        lights[2].position.z = 500;
+        lights[3].position.z = -500;
+        lights[4].position.y = 500;
+        lights[5].position.y = -500;
+
+        lights.forEach(function(r){r.lookAt(application.earth.position); r.intensity = 0.5; scene.add(r)});
         // add to the scene
         scene.add(application.light);
-
         application.camera.lookAt(application.earth.position);
         function update() {
-            // Draw!
-            // randomMove(sphere);
             application.renderer.render(scene, application.camera);
-
-            // Schedule the next frame.
             requestAnimationFrame(update);
         }
 
-        // Schedule the first frame.
         requestAnimationFrame(update);
-        // earth.rotateY((Math.PI) /(360) + 90);
-        // earth.rotateY((Math.PI) /(360) + 5);
         document.addEventListener("keydown", actions.keyDown);
     }
 };
