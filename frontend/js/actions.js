@@ -51,7 +51,6 @@ var actions = {
     },
 
     rotateCameraY: function(angle){
-        console.log(application.camera.position);
         var coords = util.cartesianToPolar(application.camera.position);
         coords.elevation += angle;
         var newCoords = util.polarToCartesian(coords);
