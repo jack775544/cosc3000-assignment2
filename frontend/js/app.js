@@ -11,8 +11,12 @@ var application = {
     light: null,
     // Also have an earth object. This will be the centre of the scene
     earth: null,
+    skybox: null,
 
     main: function () {
+        var loader = new THREE.TextureLoader();
+        var keyboard = new THREEx.KeyboardState();
+
         // Set the scene size.
         var dimensions = document.body.getBoundingClientRect();
         const WIDTH = dimensions.width;
@@ -24,7 +28,7 @@ var application = {
         const NEAR = 0.1;
         const FAR = 10000;
 
-        const container = document.querySelector('#container');
+        const container = document.getElementById('container');
 
         application.renderer = new THREE.WebGLRenderer();
         application.camera = new THREE.PerspectiveCamera(
@@ -34,7 +38,7 @@ var application = {
             FAR
         );
         console.log(application.camera);
-        application.camera.position.z = 300;
+        application.camera.position.z = 700;
         const scene = new THREE.Scene();
 
         scene.add(application.camera);
@@ -77,17 +81,68 @@ var application = {
         lights[4].position.y = 500;
         lights[5].position.y = -500;
 
+        //var axes = new THREE.AxisHelper();
+        //scene.add(axes);
+        /*var prefix = 'texture/skybox/';
+        var skyboxTextureUrls = ['x+', 'x-', 'y+', 'y-', 'z+', 'z-'].map(function(r){
+            return prefix + r + '.jpg';
+        }).map(function(e){
+            return new THREE.MeshBasicMaterial({map: loader.load(e)});
+        });
+        //var skyboxTexture = new THREE.MeshBasicMaterial({map: THREE.ImageUtils.loadTexture('texture/space.png')});
+        var skyboxGeom = new THREE.CubeGeometry(5000, 5000, 5000, 1, 1, 1, skyboxTextureUrls);
+        application.skybox = new THREE.Mesh(skyboxGeom, new THREE.MeshShaderMaterial({
+            fragmentShader: shader
+        }));
+        application.skybox.flipSided = true;
+        scene.add(application.skybox);*/
+
+        var controls = new THREE.OrbitControls(application.camera, application.renderer.domElement);
+
         lights.forEach(function(r){r.lookAt(application.earth.position); r.intensity = 0.5; scene.add(r)});
         // add to the scene
         scene.add(application.light);
         application.camera.lookAt(application.earth.position);
         function update() {
-            application.renderer.render(scene, application.camera);
             requestAnimationFrame(update);
+            application.renderer.render(scene, application.camera);
+            if (keyboard.pressed('q')) {
+                // Zoom in
+                if (util.cartesianToPolar(application.camera.position).r > 230) {
+                    actions.zoomCamera(-10);
+                }
+            }
+            if (keyboard.pressed('e')) {
+                // Zoom Out
+                if (util.cartesianToPolar(application.camera.position).r < 700) {
+                    actions.zoomCamera(10);
+                }
+            }
+            if (keyboard.pressed('w')) {
+                if (util.cartesianToPolar(application.camera.position).elevation < 1.4) {
+                    actions.rotateCameraY(10 / 360);
+                }
+            }
+            if (keyboard.pressed('d')) {
+                actions.rotateCameraX(-10 / 360);
+            }
+            if (keyboard.pressed('s')) {
+                if (util.cartesianToPolar(application.camera.position).elevation > -1.4) {
+                    actions.rotateCameraY(-10 / 360);
+                }
+            }
+            if (keyboard.pressed('a')) {
+                actions.rotateCameraX(10 / 360);
+            }
+            controls.update();
+            actions.moveLight(1/360);
         }
 
+        actions.rotateCameraX(-153.4);
+        actions.rotateCameraY(-0.4);
+
         requestAnimationFrame(update);
-        document.addEventListener("keydown", actions.keyDown);
+        //document.addEventListener("keydown", actions.keyDown);
     }
 };
 

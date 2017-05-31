@@ -11,11 +11,12 @@ def hello():
     return jsonify({"api_name": "COSC_API", "version": 2})
 
 
-@application.route("/points/all")
-def all():
+@application.route("/crashes/<timestamp>")
+def all(timestamp):
     # http://localhost:5000/points/all
     db = Database(DB_URI)
-    response = db.query('')
+    response = db.query('SELECT * FROM v_crashes',
+                        timestamp=timestamp)
     return jsonify(response.as_dict())
 
 

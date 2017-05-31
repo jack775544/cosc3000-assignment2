@@ -37,10 +37,19 @@ var actions = {
         application.camera.position.z = coords.z;
         application.camera.lookAt(application.earth.position);
 
-        application.light.position.x = application.camera.position.x;
+        /*application.light.position.x = application.camera.position.x;
         application.light.position.y = application.camera.position.y;
         application.light.position.z = application.camera.position.z;
-        application.light.lookAt(application.earth.position);
+        application.light.lookAt(application.earth.position);*/
+    },
+
+    moveLight: function(angle){
+        var coords = util.cartesianToPolar(application.light.position);
+        coords.polar += angle;
+        var newCoords = util.polarToCartesian(coords);
+        application.light.position.y = newCoords.y;
+        application.light.position.x = newCoords.x;
+        application.light.position.z = newCoords.z;
     },
 
     rotateCameraX: function(angle){
@@ -65,7 +74,7 @@ var actions = {
     },
     
     keyDown: function (event) {
-        switch (event.keyCode) {
+        /*switch (event.keyCode) {
             case 40:
             case 83:
                 // Down
@@ -95,9 +104,9 @@ var actions = {
                 break;
             case 81:
                 // q - zoom in
-                if (util.cartesianToPolar(application.camera.position).r > 230) {
+                //if (util.cartesianToPolar(application.camera.position).r > 230) {
                     actions.zoomCamera(-10);
-                }
+                //}
                 break;
             case 69:
                 // e - zoom out
@@ -105,18 +114,6 @@ var actions = {
                     actions.zoomCamera(10);
                 }
                 break;
-            case 82:
-                // r
-                /*if (application.earth.position.z < -300) {
-                    application.earth.position.z += 5;
-                }*/
-                break;
-            case 84:
-                // t
-                /*if (application.earth.position.z > -550) {
-                    application.earth.position.z += -5;
-                }*/
-                break;
-        }
+        }*/
     }
 };
