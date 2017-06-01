@@ -8,13 +8,18 @@ var application = {
     camera: null,
     // Store an array of all meshes we have made as well
     objects: [],
+    // The light of the sun
     light: null,
     // Also have an earth object. This will be the centre of the scene
     earth: null,
+    // The skybox mesh
     skybox: null,
+    // An array of all cloud meshes
+    clouds: [],
+    // The controls object
+    controls: null,
 
     main: function () {
-        var loader = new THREE.TextureLoader();
         var keyboard = new THREEx.KeyboardState();
 
         // Set the scene size.
@@ -26,7 +31,7 @@ var application = {
         const VIEW_ANGLE = 45;
         const ASPECT = WIDTH / HEIGHT;
         const NEAR = 0.1;
-        const FAR = 10000;
+        const FAR = 1000000;
 
         const container = document.getElementById('container');
 
@@ -45,7 +50,6 @@ var application = {
         application.renderer.setSize(WIDTH, HEIGHT);
         container.appendChild(application.renderer.domElement);
 
-        // ------------------------------------------------------
         var texture = THREE.ImageUtils.loadTexture('texture/earth.jpg', THREE.SphericalRefractionMapping);
         texture.wrapS = THREE.RepeatWrapping;
         texture.wrapT = THREE.RepeatWrapping;
@@ -57,14 +61,26 @@ var application = {
         material.shininess = 0;
         console.log(material);
         application.earth = construct.sphere({radius: 200, material: material});
-        //application.earth.position.z = -300;
         scene.add(application.earth);
 
-        // create a point light - this one will follow the camera
+        var cloudMaterials = ['cloud1', 'cloud2', 'cloud3', 'cloud4', 'cloud5'].map(function(r){
+            return new THREE.MeshPhongMaterial({
+                map: THREE.ImageUtils.loadTexture('texture/clouds/' + r + '.png'),
+                transparent: true
+            });
+        });
+
+        for (var i = 0; i<5; i++) {
+            const cloudMesh = construct.sphere({radius: 210 + 5*i, material: cloudMaterials[i % cloudMaterials.length]});
+            application.clouds.push({mesh: cloudMesh, x: (util.getRandomInt(1,10) / 1000) - 0.005, y: (util.getRandomInt(1,10) / 1000) - 0.005});
+        }
+        application.clouds.forEach(function(r){scene.add(r.mesh);});
+
+        // create a point light - this one will be the sun
         application.light = new THREE.PointLight(0xFFFFFF);
         application.light.intensity = 0.9;
         application.light.position.x = application.camera.position.x;
-        application.light.position.y = application.camera.position.y;
+        application.light.position.y = application.camera.position.y - 40;
         application.light.position.z = application.camera.position.z;
 
         var lights = [];
@@ -81,24 +97,13 @@ var application = {
         lights[4].position.y = 500;
         lights[5].position.y = -500;
 
-        //var axes = new THREE.AxisHelper();
-        //scene.add(axes);
-        /*var prefix = 'texture/skybox/';
-        var skyboxTextureUrls = ['x+', 'x-', 'y+', 'y-', 'z+', 'z-'].map(function(r){
-            return prefix + r + '.jpg';
-        }).map(function(e){
-            return new THREE.MeshBasicMaterial({map: loader.load(e)});
-        });
-        //var skyboxTexture = new THREE.MeshBasicMaterial({map: THREE.ImageUtils.loadTexture('texture/space.png')});
-        var skyboxGeom = new THREE.CubeGeometry(5000, 5000, 5000, 1, 1, 1, skyboxTextureUrls);
-        application.skybox = new THREE.Mesh(skyboxGeom, new THREE.MeshShaderMaterial({
-            fragmentShader: shader
-        }));
-        application.skybox.flipSided = true;
-        scene.add(application.skybox);*/
+        application.skybox = construct.skybox();
 
-        var controls = new THREE.OrbitControls(application.camera, application.renderer.domElement);
+        scene.add(application.skybox);
 
+        application.controls = new THREE.OrbitControls(application.camera, application.renderer.domElement);
+        application.controls.maxDistance = 700;
+        application.controls.minDistance = 230;
         lights.forEach(function(r){r.lookAt(application.earth.position); r.intensity = 0.5; scene.add(r)});
         // add to the scene
         scene.add(application.light);
@@ -134,15 +139,16 @@ var application = {
             if (keyboard.pressed('a')) {
                 actions.rotateCameraX(10 / 360);
             }
-            controls.update();
-            actions.moveLight(1/360);
+            application.controls.update();
+            application.earth.rotateY(1/360);
+            application.skybox.lookAt(application.light.position);
+            application.clouds.forEach(function(r){
+                r.mesh.rotateY(r.y);
+                r.mesh.rotateX(r.x);
+            });
         }
 
-        actions.rotateCameraX(-153.4);
-        actions.rotateCameraY(-0.4);
-
         requestAnimationFrame(update);
-        //document.addEventListener("keydown", actions.keyDown);
     }
 };
 

@@ -27,5 +27,35 @@ var construct = {
         );
         application.objects.push(mesh);
         return mesh;
+    },
+
+    skybox: function(){
+        var urls = [
+            'texture/skybox/x+.jpg',
+            'texture/skybox/x-.jpg',
+            'texture/skybox/y+.jpg',
+            'texture/skybox/y-.jpg',
+            'texture/skybox/z-.jpg',
+            'texture/skybox/z+.jpg'
+        ];
+        var texture_cube = THREE.ImageUtils.loadTextureCube(urls);
+        texture_cube.format = THREE.RGBFormat;
+
+        var shader = THREE.ShaderLib['cube'];
+        shader.uniforms['tCube'].value = texture_cube; // Assign textures.
+
+        var sky_material = new THREE.ShaderMaterial({
+            fragmentShader: shader.fragmentShader,
+            vertexShader: shader.vertexShader,
+            uniforms: shader.uniforms,
+            depthWrite: false,
+            side: THREE.BackSide
+        });
+
+        var skybox_dimensions = 3e4;
+        return new THREE.Mesh(
+            new THREE.BoxGeometry(skybox_dimensions, skybox_dimensions, skybox_dimensions),
+            sky_material
+        );
     }
 };
